@@ -30,7 +30,7 @@ if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
    exit 1
 fi
 
-USERAGENT="Bash No-IP Updater/0.8 "$USERNAME
+USERAGENT="Bash No-IP Updater/0.9 "$USERNAME
 
 USERNAME=$(echo -ne $USERNAME | od -A n -t x1 | tr -d '\n' | sed 's/ /%/g')
 PASSWORD=$(echo -ne $PASSWORD | od -A n -t x1 | tr -d '\n' | sed 's/ /%/g')
@@ -126,7 +126,7 @@ fi
 
 GET_IP_URLS[0]="http://icanhazip.com"
 GET_IP_URLS[1]="http://wtfismyip.com/text"
-GET_IP_URLS[2]="http://www.networksecuritytoolkit.org/nst/tools/ip.php"
+GET_IP_URLS[2]="http://nst.sourceforge.net/nst/tools/ip.php"
 GET_IP_URLS[3]="http://checkip.dyndns.org"
 
 GIP_INDEX=0
@@ -137,7 +137,7 @@ done
 
 if ! valid_ip $NEWIP; then
     LOGDATE="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    LOGLINE="[$(date +'%Y-%m-%d %H:%M:%S')] Could not find current IP"
+    LOGLINE="Could not find current IP"
     echo $LOGLINE
     echo "$LOGDATE $LOGLINE" >> $LOGFILE
     exit 1
@@ -148,6 +148,7 @@ if [ $FUPD == true ]; then
     sleep 5
 fi
 RESPONSE=$(curl -s -k --user-agent "$USERAGENT" "https://$USERNAME:$PASSWORD@dynupdate.no-ip.com/nic/update?hostname=$HOST&myip=$NEWIP")
+RESPONSE=$(echo $RESPONSE | tr -cd "[:print:]")
 
 RESPONSE_A=$(echo $RESPONSE | awk '{ print $1 }')
 case $RESPONSE_A in
